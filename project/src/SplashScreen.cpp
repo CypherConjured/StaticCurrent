@@ -1,11 +1,11 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "SplashScreen.h"
 
 
 void SplashScreen::Show(sf::RenderWindow & renderWindow)
 {
 	sf::Texture image;
-	if(image.loadFromFile("data/SplashScreen.png") != true)
+	if(image.loadFromFile("data/Splashscreen.png") != true)
 	{
 		return;
 	}
