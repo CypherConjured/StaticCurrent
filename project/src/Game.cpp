@@ -2,19 +2,24 @@
 #include "Game.h"
 #include "MainMenu.h"
 #include "SplashScreen.h"
+#include "BallType.h"
 
 void Game::Start(void)
 {
 	if(_gameState != Uninitialized)
 		return;
 	
-	_mainWindow.create(sf::VideoMode(1024,768,32),"Wild Bill and the Static Current");
+	_mainWindow.create(sf::VideoMode(SCREEN_WIDTH,SCREEN_HEIGHT,32),"Wild Bill and the Static Current");
 	_mainWindow.setFramerateLimit(60);
 
 	Player* player1 = new Player();
-	player1->setPosition((1024/2)-15,700);
-
+	player1->setPosition((SCREEN_WIDTH/2)-player1->getWidth()/2,700);
 	_gameObjectManager.add("Player",player1);
+
+	BallType *ball = new BallType();
+	ball->setPosition((SCREEN_WIDTH/2),(SCREEN_HEIGHT/2)-15);
+	_gameObjectManager.add("Ball",ball);
+
 	_gameState= Game::ShowingSplash;
 
 	while(!IsExiting())
@@ -64,12 +69,15 @@ void Game::GameLoop()
 							if(currentEvent.key.code == sf::Keyboard::Escape) ShowMenu();
 						}
 					}
+
 					_mainWindow.clear();
 
 					_gameObjectManager.updateAll();
 					_gameObjectManager.drawAll(_mainWindow);
 
 					_mainWindow.display();
+
+					if(Game::IsExiting()) break;
 				}
 				break;
 			}

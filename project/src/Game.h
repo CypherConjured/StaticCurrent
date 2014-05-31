@@ -8,7 +8,7 @@ class Game
 {
 public:
 	static void Start();
-	static sf::RenderWindow& GetWindow();
+	static GameObjectManager& GetGameObjectManager(){ return _gameObjectManager; }
 	static sf::Time GetFrameTime();
 	const static sf::Keyboard& GetInput();
 	const static int SCREEN_WIDTH = 1024;
