@@ -41,36 +41,30 @@ MainMenu::MenuResult MainMenu::HandleClick(int x, int y)
 {
 	std::list<MenuItem>::iterator it;
 
-	for ( it = _menuItems.begin(); it != _menuItems.end(); it++)
-	{
+	for ( it = _menuItems.begin(); it != _menuItems.end(); it++){
 		sf::Rect<int> menuItemRect = (*it).rect;
-		if( menuItemRect.top + menuItemRect.height > y 
-			&& menuItemRect.top < y 
-			&& menuItemRect.left < x 
-			&& menuItemRect.left + menuItemRect.width > x)
-			{
-				return (*it).action;
-			}
-	}
 
+		if( menuItemRect.top + menuItemRect.height > y &&
+			menuItemRect.left + menuItemRect.width > x &&
+			menuItemRect.top < y && 
+			menuItemRect.left < x ){
+			return (*it).action;
+		}
+	}
 	return Nothing;
 }
 
-MainMenu::MenuResult  MainMenu::GetMenuResponse(sf::RenderWindow& window)
-{
+MainMenu::MenuResult  MainMenu::GetMenuResponse(sf::RenderWindow& window){
 	sf::Event menuEvent;
 
-	while(42 != 43)
-	{
+	while(true){
+		while(window.pollEvent(menuEvent)){
 
-		while(window.pollEvent(menuEvent))
-		{
-			if(menuEvent.type == sf::Event::MouseButtonPressed)
-			{
+			if(menuEvent.type == sf::Event::MouseButtonPressed){
 				return HandleClick(menuEvent.mouseButton.x,menuEvent.mouseButton.y);
 			}
-			if(menuEvent.type == sf::Event::Closed)
-			{
+
+			if(menuEvent.type == sf::Event::Closed){
 				return Exit;
 			}
 		}
