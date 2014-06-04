@@ -28,12 +28,28 @@ void VisibleGameObject::draw(sf::RenderWindow & renderWindow)
   }
 }
 
+sf::Vector2f VisibleGameObject::getPosition() const
+{
+  if(_isLoaded)
+  {
+    return _sprite.getPosition();
+  }
+  return sf::Vector2f();
+}
 
 void VisibleGameObject::setPosition(float x, float y)
 {
   if(_isLoaded)
   {
     _sprite.setPosition(x,y);
+  }
+}
+
+void VisibleGameObject::setPosition(sf::Vector2f vec)
+{
+  if(_isLoaded)
+  {
+    _sprite.setPosition(vec);
   }
 }
 
@@ -49,15 +65,6 @@ bool VisibleGameObject::isLoaded() const
   return _isLoaded;
 }
 
-
-sf::Vector2f VisibleGameObject::getPosition() const
-{
-  if(_isLoaded)
-  {
-    return _sprite.getPosition();
-  }
-  return sf::Vector2f();
-}
 
 float VisibleGameObject::getHeight() const
 {

@@ -10,6 +10,7 @@ public:
 	virtual void update(float elapsedTime);
 
 	virtual void setPosition(float x, float y);
+	virtual void setPosition(sf::Vector2f vec);
 
 	virtual sf::Vector2f getPosition() const;
 	virtual float getWidth() const;
@@ -30,5 +31,4 @@ private:
 	std::string _filename;
 	bool _isLoaded;
 	bool _hostle;
-
 };

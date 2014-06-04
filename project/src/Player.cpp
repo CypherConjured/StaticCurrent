@@ -4,74 +4,67 @@
 
 using namespace sf;
 
-Player::Player() : _velocity(Vector2f()), _maxSpeed(Vector2f(10.0,10.0)) {
+Player::Player(){
 	load("data/player.png");
 	assert(isLoaded());
 	setHostle(false);
 	getSprite().setOrigin(getSprite().getLocalBounds().width/2, getSprite().getLocalBounds().height/2);
+	setSpeedStat( 10 );
+	setStrengthStat( 10 );
 }
 
 
-Player::~Player(){
-}
+Player::~Player(){}
+
 
 void Player::draw(sf::RenderWindow & rw)
 {
     VisibleGameObject::draw(rw);
 }
 
-Vector2f Player::getVelocity()
-{
-    return _velocity;
-}
-
 void Player::update(float elapsedTime)
 {
+	sf::Vector2f pos = this->getPosition();
 
+	getTargetVelocity().x = 0.0f;
+	getTargetVelocity().y = 0.0f;
+	
     if(Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
-        _velocity.x -= 1.0f;
+		getTargetVelocity().x = -getSpeedStat(); // use a speed formula later
     }
     if(Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
-        _velocity.x += 1.0f;
+        getTargetVelocity().x = getSpeedStat();
     }
 
 	if(Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
-        //do nothing yet.
+        if(_onGround){
+			getTargetVelocity().y -= getStrengthStat()*20;
+		}else{
+			getTargetVelocity().y = 0;
+		}
     }
-
     if(Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
-        //do nothing yet.
+        //impart force down (maybe)
     }
 
-    if(_velocity.x > _maxSpeed.x)
-        _velocity.x = _maxSpeed.x;
+	getTargetVelocity().y += 10.0f;
+	calculateVelocity();
 
-
-    if(_velocity.x < -_maxSpeed.x)
-        _velocity.x = -_maxSpeed.x;
-
-	if(_velocity.y > _maxSpeed.y)
-        _velocity.y = _maxSpeed.y;
-
-    if(_velocity.y < -_maxSpeed.y)
-        _velocity.y = -_maxSpeed.y;
-
-
-    sf::Vector2f pos = this->getPosition();
-
-    if(pos.x  < getSprite().getOrigin().x)
-    {
-        _velocity.x = _velocity.x * -0.5f; // Bounce by half velocity in opposite direction
+    if(pos.x  < getSprite().getOrigin().x){
+        _velocity.x = 0;
 		setPosition(getSprite().getOrigin().x,pos.y);
     }else if(pos.x > (Game::SCREEN_WIDTH - getSprite().getOrigin().x)){
-		_velocity.x = _velocity.x * -0.5f; // Bounce by half velocity in opposite direction
+		_velocity.x = 0;
 		setPosition((Game::SCREEN_WIDTH - getSprite().getOrigin().x),pos.y);
 	}
 
-    
+    _lastPos = getPosition();
     getSprite().move(_velocity * elapsedTime);
+	_onGround = collidesGround();
+	if(_onGround)
+		setPosition(getPosition().x,_lastPos.y);
 }

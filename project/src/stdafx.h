@@ -22,3 +22,5 @@
 #include <map>
 #include <iostream>
 #include <cassert>
+
+using namespace sf;

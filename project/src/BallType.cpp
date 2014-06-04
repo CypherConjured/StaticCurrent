@@ -6,7 +6,7 @@ BallType::BallType() :
 	_velocity(10.0f),
 	_elapsedTimeSinceStart(0.0f)
 {
-	float _startVelocity = _velocity;
+	float _startVelocity = 10.0f;
 	load("data/ball.png");
 	assert(isLoaded());
 

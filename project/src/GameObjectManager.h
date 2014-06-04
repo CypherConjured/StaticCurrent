@@ -1,8 +1,7 @@
 #pragma once
 #include "VisibleGameObject.h"
 
-class GameObjectManager
-{
+class GameObjectManager{
 public:	
 	GameObjectManager();
 	~GameObjectManager();

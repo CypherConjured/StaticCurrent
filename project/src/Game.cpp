@@ -12,13 +12,17 @@ void Game::Start(void)
 	_mainWindow.create(sf::VideoMode(SCREEN_WIDTH,SCREEN_HEIGHT,32),"Wild Bill and the Static Current");
 	_mainWindow.setFramerateLimit(60);
 
+	Level* currentLevel = new Level(); // NEEDS TO BE DRAWN FIRST
+	_gameObjectManager.add("Level",currentLevel); // FIX NEEDED FOR _GOM
+
+
 	Player* player1 = new Player();
-	player1->setPosition((SCREEN_WIDTH/2)-player1->getWidth()/2,700);
+	player1->setPosition(100,500);
 	_gameObjectManager.add("Player",player1);
 
 	BallType *ball = new BallType();
 	ball->setPosition((SCREEN_WIDTH/2),(SCREEN_HEIGHT/2)-15);
-	_gameObjectManager.add("Ball",ball);
+	_gameObjectManager.add("Ball",ball); // OVERLAPPED BY LEVEL
 
 	_gameState= Game::ShowingSplash;
 
