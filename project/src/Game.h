@@ -9,30 +9,35 @@ class Game
 {
 public:
 	static void Start();
-	static GameObjectManager& GetGameObjectManager(){ return _gameObjectManager; }
 	static sf::Time GetFrameTime();
+	static Level* GetLevel();
+	static void nextLevel();
 	const static sf::Keyboard& GetInput();
 	const static int SCREEN_WIDTH = 1024;
 	const static int SCREEN_HEIGHT = 768;
-	//static sf::RenderWindow _mainWindow; // remove this line
 
 private:
+	static Level* defineLevels( );
 	static bool IsExiting();
 	static void GameLoop();
 	
 	static void ShowSplashScreen();
 	static void ShowMenu();
 
-	enum GameState { Uninitialized, ShowingSplash, Paused, 
-					ShowingMenu, Playing, Exiting };
+	enum GameState { Uninitialized, ShowingSplash, ShowingMenu, Playing,
+		Paused, StoryMode, BattleMode, NextLevel, Exiting };
 
 
 	static GameState _gameState;
-	static sf::RenderWindow _mainWindow; //put this one back
+
+	static sf::View _mainView;
+	static sf::RenderWindow _mainWindow;
 
 	static sf::Clock _clock;
 	static sf::Time _frameTime;
+	static sf::Time _lastTime;
+	static sf::Time _currentTime;
 
-	static GameObjectManager _gameObjectManager;
+	static Level* _currentLevel;
 };
 

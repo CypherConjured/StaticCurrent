@@ -3,40 +3,42 @@
 #include "Game.h"
 
 Level::Level(){
-	setLevel(0);
-	loadLevel();
-	assert(isLoaded() && _bitmaskLoaded);
+	_next = NULL;
 
 	setPosition(0,0);
 	setHostle(false);
 }
-Level::~Level(){}
+Level::~Level(){
+	//delete _gameObjectManager; //?
+}
 
 void Level::setLevel(int level){
 	_levelNum = level;
 }
 
 void Level::loadLevel(){
-	switch(_levelNum){
-	case 1:
-		load("put first level here"); 
-		
-		break;
-	default:
-		load("data/floor.png");
+		load(levelFile);
 
-		if(_bitmask.loadFromFile("data/floor.png")){
+		if(_bitmask.loadFromFile(bitmaskFile)){
 			_bitmaskLoaded = true;
 		}else{
 			_bitmaskLoaded = false;
 		}
-
-		break;
-	}
+		assert(isLoaded() && _bitmaskLoaded);
 }
 
-void Level::draw(sf::RenderWindow & rw){
-    //VisibleGameObject::draw(rw);
+bool Level::isLast(){
+	if( this->_next == NULL)
+		return true;
+	else
+		return false;
 }
 
-void Level::update( float elapsedTime){ }
+void Level::drawAll(sf::RenderWindow & rw){
+    VisibleGameObject::draw(rw);
+	_gameObjectManager.drawAll(rw);
+}
+
+void Level::updateAll(sf::Time dt){
+	_gameObjectManager.updateAll(dt);
+}

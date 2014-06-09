@@ -48,10 +48,9 @@ void GameObjectManager::drawAll(sf::RenderWindow& renderWindow)
 	}
 }
 
-void GameObjectManager::updateAll()
+void GameObjectManager::updateAll( sf::Time timeDelta )
 {
   std::map<std::string,VisibleGameObject*>::const_iterator itr = _gameObjects.begin();
-  sf::Time timeDelta = Game::GetFrameTime();
 
   while(itr != _gameObjects.end())
   {

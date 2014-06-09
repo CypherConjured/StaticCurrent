@@ -3,10 +3,10 @@
 #include "Game.h"
 
 BallType::BallType() :
-	_velocity(10.0f),
+	_velocity(100.0f),
 	_elapsedTimeSinceStart(0.0f)
 {
-	float _startVelocity = 10.0f;
+	float _startVelocity = 100.0f;
 	load("data/ball.png");
 	assert(isLoaded());
 
@@ -16,10 +16,7 @@ BallType::BallType() :
 	_angle = (float)(rand() % 361 );
 }
 
-
-BallType::~BallType()
-{
-}
+BallType::~BallType(){ }
 
 
 void BallType::update(float elapsedTime)
@@ -49,10 +46,10 @@ void BallType::update(float elapsedTime)
 	
 
 
-	Player* player1 = dynamic_cast<Player*>(Game::GetGameObjectManager().get("Player"));
-	if(player1 != NULL)
+	Player* player = dynamic_cast<Player*>(Game::GetLevel()->GetGameObjectManager().get("Player"));
+	if(player != NULL)
 	{
-		sf::Rect<float> p1BB = player1->getBoundingRect();
+		sf::Rect<float> p1BB = player->getBoundingRect();
 	
 		if(p1BB.intersects(getBoundingRect()))       //(GetPosition().x + moveAmount.x + (GetSprite().GetSize().x /2),GetPosition().y + (GetSprite().GetSize().y /2) + moveAmount.y))
 		{ 
@@ -64,13 +61,14 @@ void BallType::update(float elapsedTime)
 			moveAmount.y = -moveAmount.y;
 
 			// Make sure ball isn't inside paddle
-			if(getBoundingRect().top + getBoundingRect().height > player1->getBoundingRect().top)
+			if(getBoundingRect().top + getBoundingRect().height > player->getBoundingRect().top)
 			{
-				setPosition(getPosition().x,player1->getBoundingRect().top - getWidth()/2 -1 );
+				//enter battle
+				setPosition(getPosition().x,player->getBoundingRect().top - getWidth()/2 -1 );
 			}
 		
 			// Now add "English" based on the players velocity.  
-			float playerVelocity = player1->getVelocity().x;
+			float playerVelocity = player->getVelocity().x;
 		
 			if(playerVelocity < 0)
 			{
@@ -84,43 +82,18 @@ void BallType::update(float elapsedTime)
 				if(_angle > 360.0f) _angle = _angle - 360.0f;
 			}
 
-			_velocity += 1.0f;
+			_velocity += 5.0f;
 		}
 
-		if(getPosition().y - getHeight()/2 <= 0)
+		if(getPosition().y - getHeight()/2 <= 0 || getPosition().y + getHeight()/2 + moveAmount.y >= Game::SCREEN_HEIGHT)
 		{
 			_angle =  180 - _angle;
 			moveAmount.y = -moveAmount.y;
 		}
 
-	
-		//if(GetPosition().y - GetSprite().GetSize().y/2 - moveAmount.y <= 0 || GetPosition().y + GetSprite().GetSize().y/2 + moveAmount.y >= Game::SCREEN_HEIGHT)
-		if(getPosition().y + getHeight()/2 + moveAmount.y >= Game::SCREEN_HEIGHT)
-		{
-			// move to middle of the screen for now and randomize angle
-			getSprite().setPosition(Game::SCREEN_WIDTH/2, Game::SCREEN_HEIGHT/2);
-			_angle = (float)(rand() % 361 );
-			_velocity = _startVelocity;
-			_elapsedTimeSinceStart = 0.0f;
-		}
-
 		getSprite().move(moveAmount);
 	}
 }
-
-//float BallType::LinearVelocityX(float angle)
-//{
-//	angle -= 90;
-//    if (angle < 0) angle = 360 + angle;
-//		return (float)std::cos( angle * ( 3.1415926 / 180.0f ));
-//}
-//
-//float BallType::LinearVelocityY(float angle)
-//{
-//	angle -= 90;
-//    if (angle < 0) angle = 360 + angle;
-//		return (float)std::sin( angle * ( 3.1415926 / 180.0f ));
-//}
 
 sf::Vector2f BallType::LinearVelocity(float angle)
 {

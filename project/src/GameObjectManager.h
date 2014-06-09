@@ -12,7 +12,7 @@ public:
 	VisibleGameObject* get(std::string name) const;
 
 	void drawAll(sf::RenderWindow& renderWindow);
-	void updateAll();
+	void updateAll( sf::Time timeDelta );
 
 private:
 	std::map<std::string, VisibleGameObject*> _gameObjects;

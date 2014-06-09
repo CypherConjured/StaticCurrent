@@ -9,7 +9,5 @@ public:
 
 	void update( float elapsedTime);
 	void draw(sf::RenderWindow& rw);
-private:
-	sf::Vector2f _lastPos;
 };
 
