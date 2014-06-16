@@ -4,6 +4,8 @@
 #include "Player.h"
 #include "Level.h"
 #include "GameObjectManager.h"
+#include "SFMLSoundProvider.h"
+#include "ServiceLocator.h"
 
 class Game
 {
@@ -15,6 +17,7 @@ public:
 	const static sf::Keyboard& GetInput();
 	const static int SCREEN_WIDTH = 1024;
 	const static int SCREEN_HEIGHT = 768;
+	static sf::View mainView;
 
 private:
 	static Level* defineLevels( );
@@ -30,7 +33,6 @@ private:
 
 	static GameState _gameState;
 
-	static sf::View _mainView;
 	static sf::RenderWindow _mainWindow;
 
 	static sf::Clock _clock;

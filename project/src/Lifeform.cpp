@@ -5,6 +5,11 @@
 Lifeform::Lifeform() : _velocity(sf::Vector2f()), _targetVelocity(sf::Vector2f(0,0)) { }
 Lifeform::~Lifeform(){ }
 
+void Lifeform::draw(sf::RenderWindow & renderWindow)
+{
+	VisibleGameObject::draw(renderWindow);
+}
+
 sf::Vector2f& Lifeform::getVelocity(){
 	return _velocity;
 }
@@ -21,6 +26,8 @@ void Lifeform::update( float dt ){
 
 	calculateVelocity();
 
+	if(pos.y < getHeight()/2) setPosition(pos.x,getHeight()/2);
+	if(pos.y > Game::SCREEN_WIDTH - getHeight()/2 ) setPosition(pos.x,Game::SCREEN_WIDTH - getHeight()/2);
     if(pos.x  < getSprite().getOrigin().x){
         _velocity.x = 0;
 		setPosition(getSprite().getOrigin().x,pos.y);
@@ -31,11 +38,13 @@ void Lifeform::update( float dt ){
     _lastPos = getPosition();
 
 	attemptMove( dt );
-    getSprite().move(sf::Vector2f(0,_velocity.y) * dt);
-	_onGround = collidesGround();
+	
+	//BUGGY Collisions  \/ \/ \/
+	//getSprite().move(sf::Vector2f(0,_velocity.y) * dt);
+	//_onGround = collidesGround();
 
-	if(_onGround)
-		setPosition(getPosition().x,_lastPos.y);
+	//if(_onGround)
+		//setPosition(getPosition().x,_lastPos.y);
 } 
 
 void Lifeform::calculateVelocity(){
@@ -49,12 +58,16 @@ void Lifeform::calculateVelocity(){
 }
 
 
-bool Lifeform::collidesGround(){
-	sf::Sprite mysprite = getSprite();
-	int mybot = (int)(getPosition().y + getHeight()/2);
-	int minx = (int)(getPosition().x - getWidth()/2);
-	int maxx = (int)(getPosition().x + getWidth()/2);
+bool Lifeform::collidesGround(){ //Avoid using this...
+	int mybot = static_cast<int>(getPosition().y + getHeight()/2);
+	int mytop = static_cast<int>(getPosition().y - getHeight()/2);
+	int minx = static_cast<int>(getPosition().x - getWidth()/2);
+	int maxx = static_cast<int>(getPosition().x + getWidth()/2);
 	Level* currentLevel = Game::GetLevel();
+	
+	sf::Vector2f p(maxx,mybot);
+	if( !currentLevel->getBoundingRect().contains(p))
+		return true;
 
 	if(currentLevel->getLevelBitmask().getPixel(minx,mybot).b < 128 || currentLevel->getLevelBitmask().getPixel(maxx,mybot).b < 128){
 		return false;
@@ -65,16 +78,17 @@ bool Lifeform::collidesGround(){
 
 bool Lifeform::detectCollisionAtPoint( sf::Vector2f p ){
 	Level* currentLevel = Game::GetLevel();
+	if( !currentLevel->getBoundingRect().contains(p))
+		return true;
 
 	if(currentLevel->getLevelBitmask().getPixel(p.x,p.y).b < 128){
 		return false;
 	}else{
 		return true;
 	}
-
 }
 
-void Lifeform::attemptMove( float dt ){
+void Lifeform::attemptMove( float dt ){ // REALLY NEEDS TO BE SPLIT INTO SEPERATE METHODS
 	int mybot = static_cast<int>(getPosition().y + getHeight()/2);
 	int mytop = static_cast<int>(getPosition().y - getHeight()/2);
 	int minx = static_cast<int>(getPosition().x - getWidth()/2);
@@ -83,71 +97,112 @@ void Lifeform::attemptMove( float dt ){
 	_lastPos = getPosition();
 	float dirx = _velocity.x * dt;
 	float diry = _velocity.y * dt;
+	float mx = 0.0f;
+	float my = 5.0f;
 	sf::Vector2f atm;
-	//if( abs(dirx) > abs(diry) ){
+	if( abs(dirx) >= abs(diry) ){
 		for( float x = 0; x <= abs(dirx); x++){
-			for( float y = 0; y >= 3; y++){
+			for( float y = 5; y >= 0; y--){
 				if(dirx > 0){
 					if( !detectCollisionAtPoint(sf::Vector2f(maxx+x,mybot-y)) )
-						atm = sf::Vector2f(x,-y);
+						if( mx < abs(x) && y < my ){
+							mx = abs(x);
+							my = y;
+							atm = sf::Vector2f(x,-y);
+						}
 				}else{
 					if( !detectCollisionAtPoint(sf::Vector2f(minx-x,mybot-y)) )
-						atm = sf::Vector2f(-x,-y);
+						if( mx < abs(x) && y < my ){
+							mx = abs(x);
+							my = y;
+							atm = sf::Vector2f(-x,-y);
+						}
 				}
 
 			}
 		}
-		/*for( float y = 0; y <= abs(diry); y++){
-			if(diry > 0){
-				if(dirx > 0){
-					if( !detectCollisionAtPoint(sf::Vector2f(maxx,mybot+y)) )
-						atm = sf::Vector2f(0,y);
-				}else{
-					if( !detectCollisionAtPoint(sf::Vector2f(minx,mybot+y)) )
-						atm = sf::Vector2f(0,y);
-				}
-			}else{
-				if(dirx > 0){
-					if( !detectCollisionAtPoint(sf::Vector2f(maxx,mytop-y)) )
-						atm = sf::Vector2f(0,-y);
-				}else{
-					if( !detectCollisionAtPoint(sf::Vector2f(minx,mytop-y)) )
-						atm = sf::Vector2f(0,-y);
-				}
-			}
-		}
-	/*}else{
+		
+		assert( (atm.y + _lastPos.y) < Game::SCREEN_HEIGHT );
+		assert( (atm.y + _lastPos.y) >= 0 );
+
+		assert( (atm.x + _lastPos.x) < Game::SCREEN_WIDTH );
+		assert( (atm.x + _lastPos.x) >= 0 );
+
+		getSprite().move(atm);
+		atm = sf::Vector2f(0,0);
+
 		for( float y = 0; y <= abs(diry); y++){
 			if(diry > 0){
-				if(dirx > 0){
-					if( !detectCollisionAtPoint(sf::Vector2f(maxx,mybot+y)) )
-						atm = sf::Vector2f(0,y);
-				}else{
-					if( !detectCollisionAtPoint(sf::Vector2f(minx,mybot+y)) )
-						atm = sf::Vector2f(0,y);
-				}
+				if( !detectCollisionAtPoint(sf::Vector2f(maxx,mybot+y)) && !detectCollisionAtPoint(sf::Vector2f(minx,mybot+y)) ){
+					_onGround = false;
+					atm = sf::Vector2f(0,y);
+				}else
+					_onGround = true;
 			}else{
-				if(dirx > 0){
-					if( !detectCollisionAtPoint(sf::Vector2f(maxx,mytop-y)) )
-						atm = sf::Vector2f(0,-y);
+				if( !detectCollisionAtPoint(sf::Vector2f(maxx,mytop-y)) && !detectCollisionAtPoint(sf::Vector2f(minx,mytop-y)) ){
+					atm = sf::Vector2f(0,-y);
+					_onGround = false;
 				}else{
-					if( !detectCollisionAtPoint(sf::Vector2f(minx,mytop-y)) )
-						atm = sf::Vector2f(0,-y);
+					_targetVelocity.y = -.4 * _velocity.y;
+					_velocity.y = 0;
 				}
 			}
 		}
-		for( float x = 0; x <= abs(dirx); x++){
-			for( float y = 0; y >= 3; y++){
-				if(dirx > 0){
-					if( !detectCollisionAtPoint(sf::Vector2f(maxx+x,mybot-y)) )
-						atm = sf::Vector2f(x,-y);
-				}else{
-					if( !detectCollisionAtPoint(sf::Vector2f(minx-x,mybot-y)) )
-						atm = sf::Vector2f(-x,-y);
-				}
 
+		assert( (atm.y + _lastPos.y) < Game::SCREEN_HEIGHT );
+		assert( (atm.y + _lastPos.y) >= 0 );
+
+		getSprite().move(atm);
+		atm = sf::Vector2f(0,0);
+
+	}else{
+		for( float y = 0; y <= abs(diry); y++){
+			if(diry > 0){
+				if( !detectCollisionAtPoint(sf::Vector2f(maxx,mybot+y)) && !detectCollisionAtPoint(sf::Vector2f(minx,mybot+y)) ){
+					_onGround = false;
+					atm = sf::Vector2f(0,y);
+				}else
+					_onGround = true;
+			}else{
+				if( !detectCollisionAtPoint(sf::Vector2f(maxx,mytop-y)) && !detectCollisionAtPoint(sf::Vector2f(minx,mytop-y)) ){
+					atm = sf::Vector2f(0,-y);
+					//TODO: cut off the _velocity.y for the jump when hitting a ceiling. 
+					_onGround = false;
+				}else{
+					_targetVelocity.y = -.4 * _velocity.y;
+					_velocity.y = 0;
+				}
 			}
 		}
-	}*/
-	getSprite().move(atm);
+
+		assert( (atm.y + _lastPos.y) < Game::SCREEN_HEIGHT );
+		assert( (atm.y + _lastPos.y) >= 0 );
+
+		getSprite().move(atm);
+		atm = sf::Vector2f(0,0);
+		
+		for( float x = 0; x <= abs(dirx); x++){
+			if(dirx > 0){
+				if( !detectCollisionAtPoint(sf::Vector2f(maxx+x,mybot)) )
+					if( mx < abs(x) ){
+						mx = abs(x);
+						atm = sf::Vector2f(x,0);
+					}
+			}else{
+				if( !detectCollisionAtPoint(sf::Vector2f(minx-x,mybot)) )
+					if( mx < abs(x)  ){
+						mx = abs(x);
+						atm = sf::Vector2f(-x,0);
+					}
+			}
+		}
+		assert( (atm.y + _lastPos.y) < Game::SCREEN_HEIGHT );
+		assert( (atm.y + _lastPos.y) >= 0 );
+
+		assert( (atm.x + _lastPos.x) < Game::SCREEN_WIDTH );
+		assert( (atm.x + _lastPos.x) >= 0 );
+
+		getSprite().move(atm);
+		atm = sf::Vector2f(0,0);
+	}
 }

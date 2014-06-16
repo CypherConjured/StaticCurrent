@@ -1,5 +1,6 @@
 #pragma once
 #include "VisibleGameObject.h"
+#include "SFMLSoundProvider.h"
 
 class Lifeform : public VisibleGameObject
 {
@@ -8,7 +9,7 @@ public:
 	~Lifeform();
 
 	virtual void update( float elapsedTime);
-	virtual void draw(sf::RenderWindow& rw) = 0;
+	virtual void draw(sf::RenderWindow& rw);
 
 	virtual sf::Vector2f& getVelocity();
 	virtual sf::Vector2f& getTargetVelocity();
@@ -23,7 +24,7 @@ public:
 	void attemptMove(float dt );
 	bool collidesGround();
 	bool _onGround;
-
+	SFMLSoundProvider soundProvider;
 	//virtual sf::Vector2f determineTargetSpeed() = 0;
 
 protected:

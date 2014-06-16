@@ -3,10 +3,10 @@
 #include "Game.h"
 
 BallType::BallType() :
-	_velocity(100.0f),
+	_velocity(150.0f),
+	_startVelocity(150.0f),
 	_elapsedTimeSinceStart(0.0f)
 {
-	float _startVelocity = 100.0f;
 	load("data/ball.png");
 	assert(isLoaded());
 
@@ -34,16 +34,20 @@ void BallType::update(float elapsedTime)
 	//float moveByY = LinearVelocityY(_angle) * moveAmount;
 
 	
-	//collide with the left or right side of the screen
+	//collide with the left/right side of the screen or the top/bottom
 	if(getPosition().x + moveAmount.x <= 0 + getWidth()/2 || getPosition().x + getWidth()/2 + moveAmount.x >= Game::SCREEN_WIDTH)
 	{
-		//Ricochet!
+		_velocity += 20.0f;
 		_angle = 360.0f - _angle;
 		if(_angle > 260.0f && _angle < 280.0f) _angle += 20.0f;
 		if(_angle > 80.0f && _angle < 100.0f) _angle += 20.0f;
 		moveAmount.x = -moveAmount.x;
+	}else if(getPosition().y - getHeight()/2 <= 0 || getPosition().y + getHeight()/2 + moveAmount.y >= Game::SCREEN_HEIGHT)
+	{
+		_velocity += 20.0f;
+		_angle =  180 - _angle;
+		moveAmount.y = -moveAmount.y;
 	}
-	
 
 
 	Player* player = dynamic_cast<Player*>(Game::GetLevel()->GetGameObjectManager().get("Player"));
@@ -51,13 +55,13 @@ void BallType::update(float elapsedTime)
 	{
 		sf::Rect<float> p1BB = player->getBoundingRect();
 	
-		if(p1BB.intersects(getBoundingRect()))       //(GetPosition().x + moveAmount.x + (GetSprite().GetSize().x /2),GetPosition().y + (GetSprite().GetSize().y /2) + moveAmount.y))
+		if(p1BB.intersects(getBoundingRect())) //this is where the ball hits the player
 		{ 
+			if( !soundProvider.IsSoundPlaying())
+				soundProvider.PlaySound("data/audio/kaboom.wav");
 			_angle =  360.0f - (_angle - 180.0f);
 			if(_angle > 360.0f) _angle -= 360.0f;
 		
-		
-
 			moveAmount.y = -moveAmount.y;
 
 			// Make sure ball isn't inside paddle
@@ -82,13 +86,7 @@ void BallType::update(float elapsedTime)
 				if(_angle > 360.0f) _angle = _angle - 360.0f;
 			}
 
-			_velocity += 5.0f;
-		}
-
-		if(getPosition().y - getHeight()/2 <= 0 || getPosition().y + getHeight()/2 + moveAmount.y >= Game::SCREEN_HEIGHT)
-		{
-			_angle =  180 - _angle;
-			moveAmount.y = -moveAmount.y;
+			_velocity = _startVelocity;
 		}
 
 		getSprite().move(moveAmount);

@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "VisibleGameObject.h"
+#include "Game.h"
 
+VisibleGameObject::VisibleGameObject() : _isLoaded(false) {
 
-VisibleGameObject::VisibleGameObject() : _isLoaded(false) { }
+}
 VisibleGameObject::~VisibleGameObject(){ }
 
 void VisibleGameObject::load(std::string filename)
@@ -41,7 +43,11 @@ void VisibleGameObject::setPosition(float x, float y)
 {
   if(_isLoaded)
   {
-    _sprite.setPosition(x,y);
+	if(y < getHeight()/2) setPosition(x,getHeight()/2);
+	else if(y > Game::SCREEN_WIDTH - getHeight()/2 ) setPosition(x,Game::SCREEN_WIDTH - getHeight()/2);
+    else if(x  < getSprite().getOrigin().x) setPosition(getSprite().getOrigin().x,y);
+    else if(x > (Game::SCREEN_WIDTH - getSprite().getOrigin().x)) setPosition((Game::SCREEN_WIDTH - getSprite().getOrigin().x),y);
+    else _sprite.setPosition(x,y);
   }
 }
 
@@ -49,7 +55,11 @@ void VisibleGameObject::setPosition(sf::Vector2f vec)
 {
   if(_isLoaded)
   {
-    _sprite.setPosition(vec);
+	if(vec.y < getHeight()/2) setPosition(vec.x,getHeight()/2);
+	else if(vec.y > Game::SCREEN_WIDTH - getHeight()/2 ) setPosition(vec.x,Game::SCREEN_WIDTH - getHeight()/2);
+    else if(vec.x  < getSprite().getOrigin().x) setPosition(getSprite().getOrigin().x,vec.y);
+    else if(vec.x > (Game::SCREEN_WIDTH - getSprite().getOrigin().x)) setPosition((Game::SCREEN_WIDTH - getSprite().getOrigin().x),vec.y);
+    else _sprite.setPosition(vec);
   }
 }
 

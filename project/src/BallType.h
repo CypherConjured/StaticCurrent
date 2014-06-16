@@ -1,9 +1,9 @@
 #pragma once
-#include "VisibleGameObject.h"
+#include "Lifeform.h"
 
 
 class BallType :
-	public VisibleGameObject
+	public Lifeform
 {
 public:
 	BallType();

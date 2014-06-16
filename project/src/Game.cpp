@@ -10,7 +10,14 @@ void Game::Start(void)
 		return;
 	
 	_mainWindow.create(sf::VideoMode(SCREEN_WIDTH,SCREEN_HEIGHT,32),"Wild Bill and the Static Current");
-	_mainWindow.setFramerateLimit(120);
+	mainView = _mainWindow.getDefaultView();
+	_mainWindow.setView(mainView);
+	_mainWindow.setFramerateLimit(60);
+
+	SFMLSoundProvider soundProvider;
+	ServiceLocator::RegisterServiceLocator(&soundProvider);
+	
+	soundProvider.PlaySong("data/audio/Glitch.ogg",true);
 
 	Game::_currentLevel = defineLevels();
 
@@ -126,7 +133,7 @@ Level* Game::GetLevel(){ return _currentLevel; }
 // A quirk of C++, static member variables need to be instantiated outside of the class
 Game::GameState Game::_gameState = Uninitialized;
 sf::RenderWindow Game::_mainWindow;
-sf::View Game::_mainView;
+sf::View Game::mainView;
 
 sf::Clock Game::_clock;
 sf::Time Game::_frameTime;
@@ -134,8 +141,6 @@ sf::Time Game::_currentTime;
 sf::Time Game::_lastTime;
 
 Level* Game::_currentLevel;
-
-
 
 Level* Game::defineLevels( ){
 	Level* _currentLevel = new Level(); 
@@ -146,26 +151,16 @@ Level* Game::defineLevels( ){
 	//**************** LEVEL 0 *********************
 	_currentLevel->levelFile = "data/floor.png";
 	_currentLevel->bitmaskFile = "data/floorBitmask.png";
-	_currentLevel->startPosition = sf::Vector2f(100,500);
+	_currentLevel->startPosition = sf::Vector2f(100,450);
 	_currentLevel->GetGameObjectManager().add("Player",player);
+	_currentLevel->GetGameObjectManager().get("Player")->setPosition(_currentLevel->startPosition);
 
 	BallType *ball = new BallType();
 	ball->setPosition((Game::SCREEN_WIDTH/2),(Game::SCREEN_HEIGHT/2)-15);
 	_currentLevel->GetGameObjectManager().add("Ball",ball);
 	_currentLevel->startPosition = sf::Vector2f(100,500);
 
-
 	//**************** LEVEL 1 ********************
-	_currentLevel->_next = new Level();
-	_currentLevel = _currentLevel->_next;
-
-	_currentLevel->levelFile = "data/floor2.png";
-	_currentLevel->bitmaskFile = "data/floor2Bitmask.png";
-	_currentLevel->startPosition = sf::Vector2f(800,600);
-	_currentLevel->GetGameObjectManager().add("Player",player);
-
-
-	//**************** LEVEL 2 ********************
 	_currentLevel->_next = new Level();
 	_currentLevel = _currentLevel->_next;
 
@@ -174,6 +169,15 @@ Level* Game::defineLevels( ){
 	_currentLevel->startPosition = sf::Vector2f(100,600);
 	_currentLevel->GetGameObjectManager().add("Player",player);
 
+
+	//**************** LEVEL 2 ********************
+	_currentLevel->_next = new Level();
+	_currentLevel = _currentLevel->_next;
+
+	_currentLevel->levelFile = "data/floor2.png";
+	_currentLevel->bitmaskFile = "data/floor2Bitmask.png";
+	_currentLevel->startPosition = sf::Vector2f(800,600);
+	_currentLevel->GetGameObjectManager().add("Player",player);
 
 	return head;
 }

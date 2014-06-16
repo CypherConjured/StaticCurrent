@@ -36,23 +36,50 @@ void Player::update(float elapsedTime)
 			getTargetVelocity().x = getSpeedStat()*40;
 		}
 	}
+	
+	/*else{ //this doesn't work
+		if(Keyboard::isKeyPressed(sf::Keyboard::Left)){
+			getTargetVelocity().x = -getSpeedStat()*4; 
+		}
+		if(Keyboard::isKeyPressed(sf::Keyboard::Right)){
+			getTargetVelocity().x = getSpeedStat()*4;
+		}
+	}*/
+
+
 	if(Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
-		Game::nextLevel();
+		if(atExitPoint())
+			Game::nextLevel();
     }
 	if(Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
         if(!_onGround)
-			getTargetVelocity().y += getSpeedStat()*40;
+			getTargetVelocity().y += getSpeedStat()*5;
     }
 
 	if(Keyboard::isKeyPressed(sf::Keyboard::Space))
     {
         if(_onGround){
-			getTargetVelocity().y -= getStrengthStat()*200; //Why so Short?
+			soundProvider.PlaySound("data/audio/blip.wav");
+			getTargetVelocity().y -= getStrengthStat()*160; //Why does it vary?
 		}
-    }
-   
+    }else{
+		getTargetVelocity().y += 60; //extra heavy if not holding space
+	}
 
 	Lifeform::update(elapsedTime);
+}
+
+bool Player::atExitPoint(){
+	sf::Vector2f p = getPosition();
+	Level* currentLevel = Game::GetLevel();
+	if( !currentLevel->getBoundingRect().contains(p))
+		return true;
+
+	if(currentLevel->getLevelBitmask().getPixel(p.x,p.y).r < 128){
+		return false;
+	}else{
+		return true;
+	}
 }

@@ -9,5 +9,9 @@ public:
 
 	void update( float elapsedTime);
 	void draw(sf::RenderWindow& rw);
+
+private:
+	bool atExitPoint();
+
 };
 
