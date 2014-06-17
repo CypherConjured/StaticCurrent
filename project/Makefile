@@ -2,7 +2,7 @@
 SHELL = /bin/bash
 CXX = g++ -c
 CXXFLAGS += -std=c++11 -I/usr/include -g -Wall -Wextra
-LIBS = -lsfml-graphics -lsfml-window -lsfml-network -lsfml-system
+LIBS = -lsfml-graphics -lsfml-window -lsfml-network -lsfml-system -lsfml-audio
 LD = g++
 LDFLAGS = -rdynamic -fno-stack-protector
 
