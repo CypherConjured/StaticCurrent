@@ -37,7 +37,7 @@ void Player::update(float elapsedTime)
 		}
 	}
 	
-	/*else{ //this doesn't work
+	/*else{ //If in air; this doesn't work.
 		if(Keyboard::isKeyPressed(sf::Keyboard::Left)){
 			getTargetVelocity().x = -getSpeedStat()*4; 
 		}

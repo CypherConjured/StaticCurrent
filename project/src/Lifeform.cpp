@@ -58,7 +58,7 @@ void Lifeform::calculateVelocity(){
 }
 
 
-bool Lifeform::collidesGround(){ //Avoid using this...
+bool Lifeform::collidesGround(){ //Avoid using this... Why? I have no clue. Thanks past self!
 	int mybot = static_cast<int>(getPosition().y + getHeight()/2);
 	int mytop = static_cast<int>(getPosition().y - getHeight()/2);
 	int minx = static_cast<int>(getPosition().x - getWidth()/2);

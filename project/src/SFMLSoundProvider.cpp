@@ -31,6 +31,7 @@ void SFMLSoundProvider::PlaySound(std::string filename)
 		{
 			// ERROR, file wasnt found, should handle error here
 			// snfe.what will contain the exception details
+			printf(snfe.what);
 		}
 	}
 	
