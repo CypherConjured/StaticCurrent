@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SoundFileCache.h"
 
-
 SoundFileCache::SoundFileCache(void) {}
 
 SoundFileCache::~SoundFileCache(void) 
