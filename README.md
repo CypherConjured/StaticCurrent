@@ -1,2 +1,2 @@
 # StaticCurrent
-RPG platformer prototype developed by William Nielsen and based on a story written by Devohn Bland.
+RPG platformer prototype developed using the SFML library by Will Nielsen.
