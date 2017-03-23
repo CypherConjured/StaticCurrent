@@ -37,14 +37,14 @@ void Player::update(float elapsedTime)
 		}
 	}
 	
-	/*else{ //If in air; this doesn't work.
+	else{ //If in air; I need to change these speed formulas to ramp up to a max speed.
 		if(Keyboard::isKeyPressed(sf::Keyboard::Left)){
-			getTargetVelocity().x = -getSpeedStat()*4; 
+			getTargetVelocity().x = -getSpeedStat()*40; 
 		}
 		if(Keyboard::isKeyPressed(sf::Keyboard::Right)){
-			getTargetVelocity().x = getSpeedStat()*4;
+			getTargetVelocity().x = getSpeedStat()*40;
 		}
-	}*/
+	}
 
 
 	if(Keyboard::isKeyPressed(sf::Keyboard::Up))

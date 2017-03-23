@@ -17,7 +17,7 @@ void Game::Start(void)
 	SFMLSoundProvider soundProvider;
 	ServiceLocator::RegisterServiceLocator(&soundProvider);
 	
-	soundProvider.PlaySong("data/audio/Glitch.ogg",true);
+	soundProvider.PlaySong("data/audio/Glitch.ogg", false);
 
 	Game::_currentLevel = defineLevels();
 
@@ -47,6 +47,7 @@ void Game::GameLoop()
 {
 	sf::Event currentEvent;
 	_mainWindow.pollEvent(currentEvent);
+	IAudioProvider* audio = ServiceLocator::GetAudio();
 
 	switch(_gameState)
 	{
@@ -63,6 +64,9 @@ void Game::GameLoop()
 		case Game::Playing:
 			{
 				sf::Event currentEvent;
+				if (!_currentLevel->songFile.empty()){
+					audio->PlaySong(_currentLevel->songFile, true);
+				}
 				while(_mainWindow.isOpen()){
 					_frameTime = _clock.restart();
 					while(_mainWindow.pollEvent(currentEvent))
@@ -71,7 +75,11 @@ void Game::GameLoop()
 
 						if(currentEvent.type == sf::Event::KeyPressed)
 						{
-							if(currentEvent.key.code == sf::Keyboard::Escape) ShowMenu();
+							if (currentEvent.key.code == sf::Keyboard::Escape){
+								audio->StopAllSounds();
+								audio->PlaySound("data/audio/pause.wav");
+								ShowMenu();
+							}
 						}
 					}
 
@@ -98,10 +106,13 @@ void Game::GameLoop()
 }
 
 void Game::nextLevel(){
-	if(!_currentLevel->isLast()){
+	if (!_currentLevel->isLast()){
 		_currentLevel = _currentLevel->_next;
 		_currentLevel->loadLevel();
 		_currentLevel->GetGameObjectManager().get("Player")->setPosition(_currentLevel->startPosition);
+		if (!_currentLevel->songFile.empty()){
+			ServiceLocator::GetAudio()->PlaySong(_currentLevel->songFile, true);
+		}
 	}
 }
 
@@ -151,6 +162,7 @@ Level* Game::defineLevels( ){
 	//**************** LEVEL 0 *********************
 	_currentLevel->levelFile = "data/floor.png";
 	_currentLevel->bitmaskFile = "data/floorBitmask.png";
+	_currentLevel->songFile = "data/audio/SvenJolly.ogg";
 	_currentLevel->startPosition = sf::Vector2f(100,450);
 	_currentLevel->GetGameObjectManager().add("Player",player);
 	_currentLevel->GetGameObjectManager().get("Player")->setPosition(_currentLevel->startPosition);
@@ -160,12 +172,14 @@ Level* Game::defineLevels( ){
 	_currentLevel->GetGameObjectManager().add("Ball",ball);
 	_currentLevel->startPosition = sf::Vector2f(100,500);
 
+
 	//**************** LEVEL 1 ********************
 	_currentLevel->_next = new Level();
 	_currentLevel = _currentLevel->_next;
 
 	_currentLevel->levelFile = "data/floor2m.png";
 	_currentLevel->bitmaskFile = "data/floor2mBitmask.png";
+	_currentLevel->songFile = "";
 	_currentLevel->startPosition = sf::Vector2f(100,600);
 	_currentLevel->GetGameObjectManager().add("Player",player);
 
@@ -176,8 +190,10 @@ Level* Game::defineLevels( ){
 
 	_currentLevel->levelFile = "data/floor2.png";
 	_currentLevel->bitmaskFile = "data/floor2Bitmask.png";
+	_currentLevel->songFile = "";
 	_currentLevel->startPosition = sf::Vector2f(800,600);
 	_currentLevel->GetGameObjectManager().add("Player",player);
+
 
 	return head;
 }

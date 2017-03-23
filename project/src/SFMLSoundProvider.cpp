@@ -31,7 +31,7 @@ void SFMLSoundProvider::PlaySound(std::string filename)
 		{
 			// ERROR, file wasnt found, should handle error here
 			// snfe.what will contain the exception details
-			printf(snfe.what);
+			printf(snfe.what());
 		}
 	}
 	
@@ -47,7 +47,7 @@ void SFMLSoundProvider::PlaySong(std::string filename, bool looping)
 	}
 	catch(SoundNotFoundExeception&)
 	{
-		// This one is dire, means we couldn't find or load the selected song
+		// We couldn't find or load the selected song
 		// So, lets exit!
 		return;
 	}
@@ -64,8 +64,7 @@ void SFMLSoundProvider::PlaySong(std::string filename, bool looping)
 		}
 		catch(SoundNotFoundExeception&)
 		{
-			// Do nothing, this exception isn't dire.  It simply means the previous sound we were
-			// trying to stop wasn't located.
+			// The sound we were trying to stop wasn't located. Ignore.
 		}
 		
 	}

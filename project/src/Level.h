@@ -15,6 +15,7 @@ public:
 	bool isLast();
 	Level* _next;
 
+	std::string songFile;
 	std::string levelFile;
 	std::string bitmaskFile;
 
@@ -27,6 +28,7 @@ private:
 	int _levelNum;
 	sf::Image _bitmask;
 	bool _bitmaskLoaded;
+
 	
 	GameObjectManager _gameObjectManager;
 };

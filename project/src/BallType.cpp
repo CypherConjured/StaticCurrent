@@ -64,7 +64,7 @@ void BallType::update(float elapsedTime)
 		
 			moveAmount.y = -moveAmount.y;
 
-			// Make sure ball isn't inside paddle
+			// Make sure ball isn't inside player
 			if(getBoundingRect().top + getBoundingRect().height > player->getBoundingRect().top)
 			{
 				//enter battle
