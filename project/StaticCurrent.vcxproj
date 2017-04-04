@@ -77,6 +77,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="InputComponent.cpp" />
+    <ClCompile Include="PhysicsComponent.cpp" />
+    <ClCompile Include="RenderComponent.cpp" />
     <ClCompile Include="src\BallType.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GameObjectManager.cpp" />
@@ -93,6 +96,9 @@
     <ClCompile Include="src\VisibleGameObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="InputComponent.h" />
+    <ClInclude Include="PhysicsComponent.h" />
+    <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="src\BallType.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\GameObjectManager.h" />
@@ -108,6 +114,10 @@
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\VisibleGameObject.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -88,121 +88,118 @@ bool Lifeform::detectCollisionAtPoint( sf::Vector2f p ){
 	}
 }
 
-void Lifeform::attemptMove( float dt ){ // REALLY NEEDS TO BE SPLIT INTO SEPERATE METHODS
-	int mybot = static_cast<int>(getPosition().y + getHeight()/2);
-	int mytop = static_cast<int>(getPosition().y - getHeight()/2);
-	int minx = static_cast<int>(getPosition().x - getWidth()/2);
-	int maxx = static_cast<int>(getPosition().x + getWidth()/2);
+void Lifeform::attemptMove( float dt ){
 
 	_lastPos = getPosition();
 	float dirx = _velocity.x * dt;
 	float diry = _velocity.y * dt;
-	float mx = 0.0f;
-	float my = 5.0f;
-	sf::Vector2f atm;
+
+	//IF youre moving mostly horizontal, check horizontal collision first
+	//TODO: Why am I doing this???
 	if( abs(dirx) >= abs(diry) ){
-		for( float x = 0; x <= abs(dirx); x++){
-			for( float y = 5; y >= 0; y--){
-				if(dirx > 0){
-					if( !detectCollisionAtPoint(sf::Vector2f(maxx+x,mybot-y)) )
-						if( mx < abs(x) && y < my ){
-							mx = abs(x);
-							my = y;
-							atm = sf::Vector2f(x,-y);
-						}
-				}else{
-					if( !detectCollisionAtPoint(sf::Vector2f(minx-x,mybot-y)) )
-						if( mx < abs(x) && y < my ){
-							mx = abs(x);
-							my = y;
-							atm = sf::Vector2f(-x,-y);
-						}
-				}
+		findHorizontalCollision(dt); //returns a bool. TODO: error handling. 
 
-			}
-		}
-		
-		assert( (atm.y + _lastPos.y) < Game::SCREEN_HEIGHT );
-		assert( (atm.y + _lastPos.y) >= 0 );
-
-		assert( (atm.x + _lastPos.x) < Game::SCREEN_WIDTH );
-		assert( (atm.x + _lastPos.x) >= 0 );
-
-		getSprite().move(atm);
-		atm = sf::Vector2f(0,0);
-
-		for( float y = 0; y <= abs(diry); y++){
-			if(diry > 0){
-				if( !detectCollisionAtPoint(sf::Vector2f(maxx,mybot+y)) && !detectCollisionAtPoint(sf::Vector2f(minx,mybot+y)) ){
-					_onGround = false;
-					atm = sf::Vector2f(0,y);
-				}else
-					_onGround = true;
-			}else{
-				if( !detectCollisionAtPoint(sf::Vector2f(maxx,mytop-y)) && !detectCollisionAtPoint(sf::Vector2f(minx,mytop-y)) ){
-					atm = sf::Vector2f(0,-y);
-					_onGround = false;
-				}else{
-					_targetVelocity.y = -.4 * _velocity.y;
-					_velocity.y = 0;
-				}
-			}
-		}
-
-		assert( (atm.y + _lastPos.y) < Game::SCREEN_HEIGHT );
-		assert( (atm.y + _lastPos.y) >= 0 );
-
-		getSprite().move(atm);
-		atm = sf::Vector2f(0,0);
+		findVerticalCollision(dt); //returns a bool. TODO: error handling.
 
 	}else{
-		for( float y = 0; y <= abs(diry); y++){
-			if(diry > 0){
-				if( !detectCollisionAtPoint(sf::Vector2f(maxx,mybot+y)) && !detectCollisionAtPoint(sf::Vector2f(minx,mybot+y)) ){
-					_onGround = false;
-					atm = sf::Vector2f(0,y);
-				}else
-					_onGround = true;
-			}else{
-				if( !detectCollisionAtPoint(sf::Vector2f(maxx,mytop-y)) && !detectCollisionAtPoint(sf::Vector2f(minx,mytop-y)) ){
-					atm = sf::Vector2f(0,-y);
-					//TODO: cut off the _velocity.y for the jump when hitting a ceiling. 
-					_onGround = false;
-				}else{
-					_targetVelocity.y = -.4 * _velocity.y;
-					_velocity.y = 0;
-				}
-			}
-		}
 
-		assert( (atm.y + _lastPos.y) < Game::SCREEN_HEIGHT );
-		assert( (atm.y + _lastPos.y) >= 0 );
+		findVerticalCollision(dt); //returns a bool. TODO: error handling.
 
-		getSprite().move(atm);
-		atm = sf::Vector2f(0,0);
-		
-		for( float x = 0; x <= abs(dirx); x++){
-			if(dirx > 0){
-				if( !detectCollisionAtPoint(sf::Vector2f(maxx+x,mybot)) )
-					if( mx < abs(x) ){
-						mx = abs(x);
-						atm = sf::Vector2f(x,0);
-					}
-			}else{
-				if( !detectCollisionAtPoint(sf::Vector2f(minx-x,mybot)) )
-					if( mx < abs(x)  ){
-						mx = abs(x);
-						atm = sf::Vector2f(-x,0);
-					}
-			}
-		}
-		assert( (atm.y + _lastPos.y) < Game::SCREEN_HEIGHT );
-		assert( (atm.y + _lastPos.y) >= 0 );
-
-		assert( (atm.x + _lastPos.x) < Game::SCREEN_WIDTH );
-		assert( (atm.x + _lastPos.x) >= 0 );
-
-		getSprite().move(atm);
-		atm = sf::Vector2f(0,0);
+		findHorizontalCollision(dt); //returns a bool. TODO: error handling.
 	}
+}
+
+bool Lifeform::findVerticalCollision(float dt){
+
+	int mybot = static_cast<int>(getPosition().y + getHeight() / 2);
+	int mytop = static_cast<int>(getPosition().y - getHeight() / 2);
+	int minx = static_cast<int>(getPosition().x - getWidth() / 2);
+	int maxx = static_cast<int>(getPosition().x + getWidth() / 2);
+
+	float diry = _velocity.y * dt;
+
+	sf::Vector2f atm = sf::Vector2f(0, 0);
+
+	for (float y = 0; y <= abs(diry); y++){
+		if (diry > 0){
+			if (!detectCollisionAtPoint(sf::Vector2f(maxx, mybot + y)) && !detectCollisionAtPoint(sf::Vector2f(minx, mybot + y))){
+				_onGround = false;
+				atm = sf::Vector2f(0, y);
+			}
+			else
+				_onGround = true;
+		}
+		else{
+			if (!detectCollisionAtPoint(sf::Vector2f(maxx, mytop - y)) && !detectCollisionAtPoint(sf::Vector2f(minx, mytop - y))){
+				atm = sf::Vector2f(0, -y);
+				//TODO: cut off the _velocity.y for the jump when hitting a ceiling. 
+				_onGround = false;
+			}
+			else{
+				_targetVelocity.y = -.4 * _velocity.y;
+				_velocity.y = 0;
+			}
+		}
+	}
+	
+	//checking for out of bounds
+	if (!((atm.y + _lastPos.y) < Game::SCREEN_HEIGHT)
+		|| !((atm.y + _lastPos.y) >= 0)
+		|| !((atm.x + _lastPos.x) < Game::SCREEN_WIDTH)
+		|| !((atm.x + _lastPos.x) >= 0)) return false;
+
+	getSprite().move(atm);
+
+	return true;
+}
+
+bool Lifeform::findHorizontalCollision(float dt){
+	int mybot = static_cast<int>(getPosition().y + getHeight() / 2);
+	int mytop = static_cast<int>(getPosition().y - getHeight() / 2);
+	int minx = static_cast<int>(getPosition().x - getWidth() / 2);
+	int maxx = static_cast<int>(getPosition().x + getWidth() / 2);
+
+	float dirx = _velocity.x * dt;
+	float diry = _velocity.y * dt;
+
+	//This is the final movement vector.
+	sf::Vector2f atm = sf::Vector2f(0, 0);
+
+	//These are for determining the max movement in a given direction.
+	//Note how they match the for loops below.
+	float mx = 0.0f;
+	float my = 5.0f;
+
+		//Check collision in the direction of travel 
+		for (float x = 0; x <= abs(dirx); x++){
+			for (float y = 5; y >= 0; y--){
+				//Are you going right or left?
+				if (dirx > 0){
+					if (!detectCollisionAtPoint(sf::Vector2f(maxx + x, mybot - y)))
+						if (mx < abs(x) && y < my){
+							mx = abs(x);
+							my = y;
+							atm = sf::Vector2f(x, -y);
+						}
+				}
+				else{
+					if (!detectCollisionAtPoint(sf::Vector2f(minx - x, mybot - y)))
+						if (mx < abs(x) && y < my){
+							mx = abs(x);
+							my = y;
+							atm = sf::Vector2f(-x, -y);
+						}
+				}
+
+			}
+		}
+
+		//checking for out of bounds
+		if(!((atm.y + _lastPos.y) < Game::SCREEN_HEIGHT) 
+			|| !((atm.y + _lastPos.y) >= 0)
+			|| !((atm.x + _lastPos.x) < Game::SCREEN_WIDTH)
+			|| !((atm.x + _lastPos.x) >= 0)) return false;
+
+		getSprite().move(atm);
+		return true;
 }

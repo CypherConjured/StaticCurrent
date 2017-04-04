@@ -28,6 +28,8 @@ public:
 	//virtual sf::Vector2f determineTargetSpeed() = 0;
 
 protected:
+	bool findVerticalCollision(float dt);
+	bool findHorizontalCollision(float dt);
 	sf::Vector2f _lastPos;
 	sf::Vector2f _velocity;
 	sf::Vector2f _targetVelocity;
